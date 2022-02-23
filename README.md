@@ -6,7 +6,6 @@ However, if documentation is your life's blood. The methods used can be referenc
 
 ## Node Object
 
-
 Import the useNode const using the 'import' method. 
  `import {useNode} from "./master";`
 
