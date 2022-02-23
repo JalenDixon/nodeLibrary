@@ -6,7 +6,6 @@ However, if documentation is your life's blood. The methods used can be referenc
 
 ## Node Object
 
-`Export Class Node{...methods}`
 Import the node object using either 'require' or 'import' methods. (Require for common js and import for module)
 `const myVariable = require('fs')`or `import * as fs from "node:fs";`
 
