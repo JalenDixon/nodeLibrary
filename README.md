@@ -1,18 +1,18 @@
 # Node Library
 
-### This library is designed to be used with little to no knowledge of node.js. Simply import the 'NODE' class and access the methods using dot notation (Example: `let myVariable = new Node() -> myVariable.write(parameters go here)`), and you're on your way to manipulating the file system without digging through documentation
+### This library is designed to be used with little to no knowledge of node.js. Simply import the constant useNode and access the methods using dot notation (Example:  ```useNode.method(parameters go here)```), and you're on your way to manipulating the file system without digging through documentation
 
 However, if documentation is your life's blood. The methods used can be referenced in their more technical state here -> <https://nodejs.org/api/>
 
 ## Node Object
 
-`Export Class Node{...methods}`
-Import the node object using either 'require' or 'import' methods. (Require for common js and import for module)
-`const myVariable = require('fs')`or `import * as fs from "node:fs";`
 
-#### The file methods are asynchronous and non-blocking. The directory methods are synchronous and blocking. This was an intentional design choice, to prevent unexpected behavior with directories
+Import the useNode const using the 'import' method. 
+ `import {useNode} from "./master";`
 
-## Here are a list of methods this class has access to
+#### The file methods are asynchronous and non-blocking. The directory methods are synchronous and blocking. This was an intentional design choice, to prevent unexpected behavior with directories.
+
+## Here are a list of methods this constant has access to
 
 - Write
 - ReadFile
@@ -37,43 +37,43 @@ Import the node object using either 'require' or 'import' methods. (Require for 
 
 #### This method takes in the filepath and the data (of any type) that you wish to write. If there is no file at that path, one will be created
 
-`myvariable.write("/folder/example.txt","Hello world")`
+`useNode.write("/folder/example.txt","Hello world")`
 
 ### Read
 
 #### This method takes in the filepath and the data (of any type) that you wish to read. If there is no file at that path, the method will produce an error, which will be console.logged
 
-`myvariable.readFile("/folder/example.txt")`
+`useNode.readFile("/folder/example.txt")`
 
 ### Append
 
 #### This method takes in the filepath and the data (of any type) that you wish to append to the end of the targeted file. If there is no file at that path, one will be created
 
-`myvariable.append("/folder/example.txt","Hello world the sequel")`
+`useNode.append("/folder/example.txt","Hello world the sequel")`
 
 ### CheckFile
 
 #### This method takes in the filepath. If the file does not exist or you do not have permission to access the file, an error will be logged
 
-`myvariable.checkFile("/folder/example.txt")`
+`useNode.checkFile("/folder/example.txt")`
 
 ### DeleteFile
 
 #### This method takes in the filepath. If there is no file at that location an error will be logged
 
-`myvariable.deleteFile("/folder/example.txt")`
+`useNode.deleteFile("/folder/example.txt")`
 
 ### MoveFile
 
 #### This method takes in the 'old' or 'current' file path and a new filepath and moves it by 'renaming'
 
-`myvariable.moveFile("/folder/example.txt","/otherFolder/example.txt)`
+`useNode.moveFile("/folder/example.txt","/otherFolder/example.txt)`
 
 ### CopyFile
 
 #### This method takes in the source file path and the destination file path and copies it into the new location
 
-`myvariable.copyFile("/sourceFolder/example.txt","/destinationFolder/example.txt")`
+`useNode.copyFile("/sourceFolder/example.txt","/destinationFolder/example.txt")`
 
 ## Directory Methods
 
@@ -83,13 +83,13 @@ Import the node object using either 'require' or 'import' methods. (Require for 
 
 You want to first target the directory that the future children directories will branch off of. If not, the method will throw an error.
 
-`myVariable.makeDir("/parent/child1/child2/child3", true or false)`
+`useNode.makeDir("/parent/child1/child2/child3", true or false)`
 
 ### DeleteDir
 
 #### This method takes a directory path, and the same multipleDirs boolean from Makedir. If makedirs is false, the only directory deleted will be the current one. If multipleDirs is true, the method will recursively delete every child directory
 
-`myVariable.deleteDir("/parent/child1/child2/child3", true or false)`
+`useNode.deleteDir("/parent/child1/child2/child3", true or false)`
 
 ### MoveDir
 
@@ -97,7 +97,7 @@ You want to first target the directory that the future children directories will
 
 Directories: /parent1/sadChild ---- /parent2/
 
-`myVariable.moveDir("/parent1/sadChild", "/parent2/sadChild")`
+`useNode.moveDir("/parent1/sadChild", "/parent2/sadChild")`
 
 Result --> /parent1 ----- /parent2/sadChild
 
@@ -107,7 +107,7 @@ Result --> /parent1 ----- /parent2/sadChild
 
 Directories: /parent1/sadChild
 
-`myVariable.renameDir("/parent1/sadChild", "/parent1/confusedChild")`
+`useNode.renameDir("/parent1/sadChild", "/parent1/confusedChild")`
 
 Result --> /parent1/confusedChild
 
@@ -115,6 +115,7 @@ Result --> /parent1/confusedChild
 
 #### This method loops over a directory and fires a function for each file inside the directory depending on the description of the action. It takes in a directory path, the desired action, an optional new path, and an optional data parameter of any time
 
+```useNode.loopOverDir(parameters below)```
 ```
 loopOverDir(
    dirPath: string,
@@ -130,6 +131,7 @@ The action parameter specifies what of the four possible methods will be run on 
 
 #### This method 'watches' a file or a directory, firing a function if the directory or file changes or is renamed based on the value of the 'watchFor' variable
 
+```useNode.watchFileOrDir(parameters below)```
 ```
 watchFileOrDir(
    filePath: string,
@@ -148,6 +150,8 @@ watchFileOrDir(
 
 #### This method takes in the URL as a string and the desired parameter as a string. It returns the value from the parameter
 
+```useNode.getSingleUrlParam(parameters below)```
+
 ```
 getSingleUrlParam(grabbedURL: string, param: string) {
    const tempUrl = new URL(grabbedURL);
@@ -160,10 +164,10 @@ getSingleUrlParam(grabbedURL: string, param: string) {
 
 #### This method takes a url as a string and an array of strings for the desired parameters and returns an array of parameter values
 
-`getUrlParameters(grabbedURL: string, params: string[]): string[]`
+`useNode.getUrlParameters(grabbedURL: string, params: string[]): string[]`
 
 ### GrabUrlParamsKeysAndValues
 
 #### This method takes in a url as a string and returns an object of arrays, each containing the key and value pair for all parameters in a URL
 
-`grabUrlParamsKeysAndValues(grabbedURL: string)`
+`useNode.grabUrlParamsKeysAndValues(grabbedURL: string)`
