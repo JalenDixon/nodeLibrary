@@ -1,6 +1,13 @@
 import * as fs from "node:fs";
+import {isArgumentsObject} from "util/types";
+import * as https from "https";
+
 
 // file system class
+
+
+
+
 
 class Node {
 	write(filePath: string, data: any) {
@@ -150,5 +157,39 @@ class Node {
 			}
 		);
 	}
+
+	getReq(url: string) {
+		https.get(url, (res) => {
+			console.log(`Your status-code is ${res.statusCode}`)
+			console.log(`Your headers are ${JSON.stringify(res.headers)}`)
+			res.on('error', error => {
+				console.error(error)
+			})
+				.on('data', (d) => {
+					process.stdout.write(d)
+				})
+		})
+	}
+
+	postPutOrDeleteReq(options, data: Object) {
+		let postBody = JSON.stringify(data)
+		const req = https.request(options, (res) => {
+			console.log(`Your status-code is ${res.statusCode}`)
+			console.log(`Your headers are ${JSON.stringify(res.headers)}`)
+			res.on('data', (d) => {
+				process.stdout.write(d)
+			})
+			res.on('end',()=>{
+				console.log(postBody)
+			})
+			req.on('error', (e) => {
+				console.error(e)
+			})
+		})
+		req.write(postBody)
+		req.end()
+	}
+
 }
+
 export const useNode = new Node()
