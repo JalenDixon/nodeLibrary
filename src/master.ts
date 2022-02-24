@@ -6,9 +6,6 @@ import * as https from "https";
 // file system class
 
 
-
-
-
 class Node {
 	write(filePath: string, data: any) {
 		return fs.writeFile(filePath, data, (err) =>
@@ -158,7 +155,7 @@ class Node {
 		);
 	}
 
-	getReq(url: string) {
+	getReq(url: string, callbackFun?: Function) {
 		https.get(url, (res) => {
 			console.log(`Your status-code is ${res.statusCode}`)
 			console.log(`Your headers are ${JSON.stringify(res.headers)}`)
@@ -167,11 +164,13 @@ class Node {
 			})
 				.on('data', (d) => {
 					process.stdout.write(d)
+					callbackFun != undefined || null ? callbackFun(d) : null
 				})
 		})
+
 	}
 
-	postPutOrDeleteReq(options, data: Object) {
+	postPutOrDeleteReq(options, data?: Object) {
 		let postBody = JSON.stringify(data)
 		const req = https.request(options, (res) => {
 			console.log(`Your status-code is ${res.statusCode}`)
@@ -179,14 +178,14 @@ class Node {
 			res.on('data', (d) => {
 				process.stdout.write(d)
 			})
-			res.on('end',()=>{
+			res.on('end', () => {
 				console.log(postBody)
 			})
 			req.on('error', (e) => {
 				console.error(e)
 			})
 		})
-		req.write(postBody)
+		postBody ? req.write(postBody) : null
 		req.end()
 	}
 

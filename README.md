@@ -1,8 +1,11 @@
+<div align="center"><img height="200px" width="200px" src="./src/resources/nodejs-png-nodejs-icon-png-50-px-1600.png" alt="node.js">
+</div>
+
 # Node Library
 
-### This library is designed to be used with little to no knowledge of node.js. Simply import the constant useNode and access the methods using dot notation (Example:  ```useNode.method(parameters go here)```), and you're on your way to manipulating the file system without digging through documentation
+### This library is designed to be used with little to no knowledge of node.js. Simply import the constant useNode and access the methods using dot notation.<br><br> Example:  ```useNode.method(parameters go here)```<br><br> Just like that, you're on your way to manipulating the file system without digging through complex documentation
 
-However, if documentation is your life's blood. The methods used can be referenced in their more technical state here -> <https://nodejs.org/api/>
+####However, if documentation is your life's blood. The methods used can be referenced in their more technical state here -> <https://nodejs.org/api/>
 
 ## Node Object
 
@@ -29,6 +32,8 @@ Import the useNode const using the 'import' method.
 - GetSingleUrlParam
 - GetUrlParameters
 - GrabUrlParamsKeysAndValues
+- GetReq
+- PostPutOrDeleteReq
 
 # Examples
 
@@ -144,6 +149,7 @@ watchFileOrDir(
 #### The variable keepWatching is a boolean that defines if the file or directory will be tracked for the duration of your program or not. True, it is a persistent watch. On false, it is not. The watchFor variable defines if the function is fired during a file or directory rename or change in the content. This behavior varies depending on the browser or operating system. Testing for the desired behavior is recommended prior to use
 
 ## Url Methods
+###For practicing the below url methods, I utilized the website --> <https://reqres.in/>
 
 ### GetSingleUrlParam
 
@@ -170,3 +176,36 @@ getSingleUrlParam(grabbedURL: string, param: string) {
 #### This method takes in a url as a string and returns an object of arrays, each containing the key and value pair for all parameters in a URL
 
 `useNode.grabUrlParamsKeysAndValues(grabbedURL: string)`
+
+### Get Request
+
+#### This method executes a get request to a URL and then fires an optional function with the data retrieved.  
+
+```useNode.getReq("your URL here",callBackFunction)``` 
+or ```useNode.getReq("your URL here")```
+
+### PostPutOrDeleteReq
+
+#### This method takes in two parameters: an object that <u>must</u> be created, and an optional data parameter in the shape of an object. The first object contains the properties that node will parse through during its https operations. The second object will be stringified automatically.
+
+The first object is shaped as so: ```
+const options = {
+hostname: 'the base url',
+path: 'the endpoint desired',
+method: 'the method you want to utilize',
+header: {
+'Content-Type': 'the type of data, i.e json'
+}
+}```
+
+Example: ```useNode.postPutOrDeleteReq(options,dataToPost)```<br>
+<br>
+Example of the first parameter: ```const options = {
+hostname: 'reqres.in',
+path: '/api/users',
+method: 'POST',
+header: {
+'Content-Type': 'application/json'
+}
+}```
+

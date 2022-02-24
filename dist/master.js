@@ -118,7 +118,7 @@ var Node = /** @class */ (function () {
             console.log("Your file or directory at ".concat(filePath, " has been changed."));
         });
     };
-    Node.prototype.getReq = function (url) {
+    Node.prototype.getReq = function (url, callbackFun) {
         https.get(url, function (res) {
             console.log("Your status-code is ".concat(res.statusCode));
             console.log("Your headers are ".concat(JSON.stringify(res.headers)));
@@ -127,6 +127,7 @@ var Node = /** @class */ (function () {
             })
                 .on('data', function (d) {
                 process.stdout.write(d);
+                callbackFun != undefined || null ? callbackFun(d) : null;
             });
         });
     };
@@ -145,7 +146,7 @@ var Node = /** @class */ (function () {
                 console.error(e);
             });
         });
-        req.write(postBody);
+        postBody ? req.write(postBody) : null;
         req.end();
     };
     return Node;
