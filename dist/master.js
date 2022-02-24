@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useNode = void 0;
 var fs = require("node:fs");
+var https = require("https");
 // file system class
 var Node = /** @class */ (function () {
     function Node() {
@@ -116,6 +117,36 @@ var Node = /** @class */ (function () {
             callBackFun();
             console.log("Your file or directory at ".concat(filePath, " has been changed."));
         });
+    };
+    Node.prototype.getReq = function (url) {
+        https.get(url, function (res) {
+            console.log("Your status-code is ".concat(res.statusCode));
+            console.log("Your headers are ".concat(JSON.stringify(res.headers)));
+            res.on('error', function (error) {
+                console.error(error);
+            })
+                .on('data', function (d) {
+                process.stdout.write(d);
+            });
+        });
+    };
+    Node.prototype.postPutOrDeleteReq = function (options, data) {
+        var postBody = JSON.stringify(data);
+        var req = https.request(options, function (res) {
+            console.log("Your status-code is ".concat(res.statusCode));
+            console.log("Your headers are ".concat(JSON.stringify(res.headers)));
+            res.on('data', function (d) {
+                process.stdout.write(d);
+            });
+            res.on('end', function () {
+                console.log(postBody);
+            });
+            req.on('error', function (e) {
+                console.error(e);
+            });
+        });
+        req.write(postBody);
+        req.end();
     };
     return Node;
 }());
