@@ -14,7 +14,7 @@ Import the useNode const using the 'import' method.
 
 #### The file methods are asynchronous and non-blocking. The directory methods are synchronous and blocking. This was an intentional design choice, to prevent unexpected behavior with directories.
 
-## Here are a list of methods this constant has access to
+## Here are a list of methods this constant has access to:
 
 - Write
 - ReadFile
@@ -39,19 +39,19 @@ Import the useNode const using the 'import' method.
 
 ### Write
 
-#### This method takes in the filepath and the data (of any type) that you wish to write. If there is no file at that path, one will be created
+#### This method takes in the filepath and the data (of any type) that you wish to write. If there is no file at that path, one will be created.
 
 `useNode.write("/folder/example.txt","Hello world")`
 
 ### Read
 
-#### This method takes in the filepath and the data (of any type) that you wish to read. If there is no file at that path, the method will produce an error, which will be console.logged
+#### This method takes in the filepath and the data (of any type) that you wish to read. If there is no file at that path, the method will produce an error, which will be console.logged.
 
 `useNode.readFile("/folder/example.txt")`
 
 ### Append
 
-#### This method takes in the filepath and the data (of any type) that you wish to append to the end of the targeted file. If there is no file at that path, one will be created
+#### This method takes in the filepath and the data (of any type) that you wish to append to the end of the targeted file. If there is no file at that path, one will be created.
 
 `useNode.append("/folder/example.txt","Hello world the sequel")`
 
