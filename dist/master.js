@@ -142,14 +142,29 @@ class Node {
     }
     hashIt(password) {
         const hash = crypto.createHash("sha256");
+        let tempData;
         hash.on("readable", () => {
             const data = hash.read();
             if (data) {
                 console.log(data.toString("hex"));
+                tempData += data;
             }
         });
         hash.write(password);
         hash.end();
+        return tempData;
+    }
+    verifyHash(password, hash) {
+        let tempHash = this.hashIt(password);
+        let verified;
+        if (tempHash == this.hashIt(password)) {
+            verified = true;
+        }
+        else {
+            verified = false;
+        }
+        verified ? console.log(`Hash verified!`) : console.log("Failure to verify");
+        return verified;
     }
     createPubandPrivKey(passPhrase, pubKeyStore, privKeyStore) {
         crypto.generateKeyPair("rsa", {
@@ -171,35 +186,6 @@ class Node {
             this.write(pubKeyStore, publicKey);
             this.write(privKeyStore, privateKey);
         });
-    }
-    signAndVerify3(passphrase, data, privateKey, pubKey) {
-        const sign = crypto.createSign("SHA256");
-        const signature = sign.sign({
-            key: privateKey,
-            format: "pem",
-            type: "pkcs8",
-            passphrase: passphrase,
-        });
-        const bufferedData = Buffer.from(data);
-        sign.write(data);
-        sign.end();
-        const verify = crypto.createVerify("SHA256");
-        verify.write(data);
-        const isverified = crypto.verify("SHA256", bufferedData, pubKey, signature);
-        console.log(isverified);
-        verify.end();
-    }
-    signAndVerify(privateKey, publicKey, dataToWrite) {
-        // Using Hashing Algorithm
-        const algorithm = "SHA256";
-        // Converting string to buffer
-        const data = Buffer.from(dataToWrite);
-        // Sign the data and returned signature in buffer
-        const signature = crypto.sign(algorithm, data, privateKey);
-        // Verifying signature using crypto.verify() function
-        const isVerified = crypto.verify(algorithm, data, publicKey, signature);
-        // Printing the result
-        console.log(`Verified: ${isVerified}`);
     }
 }
 exports.useNode = new Node();
