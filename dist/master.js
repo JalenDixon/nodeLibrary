@@ -1,155 +1,206 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useNode = void 0;
-var fs = require("node:fs");
-var https = require("https");
+const fs = require("node:fs");
+const https = require("https");
+const child_process_1 = require("child_process");
+const process = require("process");
+const crypto = require("crypto");
 // file system class
-var Node = /** @class */ (function () {
-    function Node() {
+class Node {
+    write(filePath, data) {
+        return fs.writeFile(filePath, data, (err) => err ? console.log(err) : console.log(`File was created at ${filePath}`));
     }
-    Node.prototype.write = function (filePath, data) {
-        return fs.writeFile(filePath, data, function (err) {
-            return err ? console.log(err) : console.log("File was created at ".concat(filePath));
-        });
-    };
-    Node.prototype.append = function (filePath, data) {
-        return fs.appendFile(filePath, data, function (err) {
-            return err
-                ? console.log(err)
-                : console.log("Appended data to file at ".concat(filePath));
-        });
-    };
-    Node.prototype.checkFile = function (filePath) {
-        return fs.access(filePath, function (err) {
-            return err
-                ? console.log(err)
-                : console.log("This file either doesnt exist or you're not allowed to view it, at ".concat(filePath));
-        });
-    };
-    Node.prototype.deleteFile = function (filePath) {
-        return fs.rm(filePath, function (err) {
-            return err
-                ? console.log("This file either doesnt exist or you're pointing in the wrong place")
-                : console.log("File successfully removed");
-        });
-    };
-    Node.prototype.moveFile = function (oldFilePath, newFilePath) {
-        return fs.rename(oldFilePath, newFilePath, function (err) {
-            return err
-                ? console.log(err)
-                : "File successfully moved from ".concat(oldFilePath, " to ").concat(newFilePath);
-        });
-    };
-    Node.prototype.copyFile = function (sourcePath, destinationPath) {
-        return fs.copyFile(sourcePath, destinationPath, function (err) {
-            return err
-                ? console.log(err)
-                : "File successfully copied from ".concat(sourcePath, " to ").concat(destinationPath);
-        });
-    };
-    Node.prototype.readFile = function (filePath) {
-        return fs.readFile(filePath, function (err, data) {
-            return err ? console.log(err) : data;
-        });
-    };
-    Node.prototype.makeDir = function (directoryShape, multipleDirs) {
-        return fs.mkdir(directoryShape, { recursive: multipleDirs }, function (err) {
-            return err
-                ? console.log(err)
-                : "Directory with the shape of ".concat(directoryShape, " successfully created.");
-        });
-    };
-    Node.prototype.deleteDir = function (dirPath, multipleDirs) {
-        return fs.rmdir(dirPath, { recursive: multipleDirs }, function (err) {
-            return err ? console.log(err) : "".concat(dirPath, " removed.");
-        });
-    };
-    Node.prototype.renameDir = function (oldPath, newPath) {
+    append(filePath, data) {
+        return fs.appendFile(filePath, data, (err) => err
+            ? console.log(err)
+            : console.log(`Appended data to file at ${filePath}`));
+    }
+    checkFile(filePath) {
+        return fs.access(filePath, (err) => err
+            ? console.log(err)
+            : console.log(`This file either doesnt exist or you're not allowed to view it, at ${filePath}`));
+    }
+    deleteFile(filePath) {
+        return fs.rm(filePath, (err) => err
+            ? console.log(`This file either doesnt exist or you're pointing in the wrong place`)
+            : console.log("File successfully removed"));
+    }
+    moveFile(oldFilePath, newFilePath) {
+        return fs.rename(oldFilePath, newFilePath, (err) => err
+            ? console.log(err)
+            : `File successfully moved from ${oldFilePath} to ${newFilePath}`);
+    }
+    copyFile(sourcePath, destinationPath) {
+        return fs.copyFile(sourcePath, destinationPath, (err) => err
+            ? console.log(err)
+            : `File successfully copied from ${sourcePath} to ${destinationPath}`);
+    }
+    readFile(filePath) {
+        return fs.readFileSync(filePath, { encoding: "utf8" });
+    }
+    makeDir(directoryShape, multipleDirs) {
+        return fs.mkdir(directoryShape, { recursive: multipleDirs }, (err) => err
+            ? console.log(err)
+            : `Directory with the shape of ${directoryShape} successfully created.`);
+    }
+    deleteDir(dirPath, multipleDirs) {
+        return fs.rmdir(dirPath, { recursive: multipleDirs }, (err) => err ? console.log(err) : `${dirPath} removed.`);
+    }
+    renameDir(oldPath, newPath) {
         return fs.renameSync(oldPath, newPath);
-    };
-    Node.prototype.moveDir = function (oldPath, newPath) {
+    }
+    moveDir(oldPath, newPath) {
         return fs.renameSync(oldPath, newPath);
-    };
-    Node.prototype.getSingleUrlParam = function (grabbedURL, param) {
-        var tempUrl = new URL(grabbedURL);
-        var search_param = tempUrl.searchParams;
+    }
+    getSingleUrlParam(grabbedURL, param) {
+        const tempUrl = new URL(grabbedURL);
+        const search_param = tempUrl.searchParams;
         return search_param.get(param);
-    };
-    Node.prototype.getUrlParameters = function (grabbedURL, params) {
-        var tempURL = new URL(grabbedURL);
-        var search_params = tempURL.searchParams;
-        var i = 0;
-        var finalReturnArray = [];
+    }
+    getUrlParameters(grabbedURL, params) {
+        const tempURL = new URL(grabbedURL);
+        const search_params = tempURL.searchParams;
+        let i = 0;
+        let finalReturnArray = [];
         params.forEach(grabParams);
         function grabParams() {
-            var tempValue = search_params.get(params[i]);
+            let tempValue = search_params.get(params[i]);
             finalReturnArray.push(!tempValue ? "No value" : tempValue);
             i++;
         }
         return finalReturnArray;
-    };
-    Node.prototype.grabUrlParamsKeysAndValues = function (grabbedURL) {
-        var tempURL = new URL(grabbedURL);
+    }
+    grabUrlParamsKeysAndValues(grabbedURL) {
+        const tempURL = new URL(grabbedURL);
         return tempURL.searchParams.entries();
-    };
-    Node.prototype.loopOverDir = function (dirPath, action, newPath, data) {
-        return fs.readdir(dirPath, function (err, files) {
-            return err
-                ? console.log("Failed to grab directory at ".concat(dirPath))
-                : files.forEach(function (item) {
-                    var tempNode = new Node();
-                    var truePath = "".concat(dirPath, "/").concat(item);
-                    action == "move"
-                        ? tempNode.renameDir(truePath, newPath)
-                        : action == "delete"
-                            ? tempNode.deleteFile(truePath)
-                            : action == "append"
-                                ? tempNode.append(truePath, data)
-                                : action == "read"
-                                    ? tempNode.readFile(truePath)
-                                    : null;
-                });
-        });
-    };
-    Node.prototype.watchFileOrDir = function (filePath, keepWatching, pathType, callBackFun, watchFor) {
+    }
+    loopOverDir(dirPath, action, newPath, data) {
+        return fs.readdir(dirPath, (err, files) => err
+            ? console.log(`Failed to grab directory at ${dirPath}`)
+            : files.forEach((item) => {
+                let tempNode = new Node();
+                let truePath = `${dirPath}/${item}`;
+                action == "move"
+                    ? tempNode.renameDir(truePath, newPath)
+                    : action == "delete"
+                        ? tempNode.deleteFile(truePath)
+                        : action == "append"
+                            ? tempNode.append(truePath, data)
+                            : action == "read"
+                                ? tempNode.readFile(truePath)
+                                : null;
+            }));
+    }
+    watchFileOrDir(filePath, keepWatching, pathType, callBackFun, watchFor) {
         console.log("I am watching you");
-        return fs.watch(filePath, { persistent: keepWatching, recursive: pathType == "dir" }, function (watchFor, filePath) {
+        return fs.watch(filePath, { persistent: keepWatching, recursive: pathType == "dir" }, (watchFor, filePath) => {
             callBackFun();
-            console.log("Your file or directory at ".concat(filePath, " has been changed."));
+            console.log(`Your file or directory at ${filePath} has been changed.`);
         });
-    };
-    Node.prototype.getReq = function (url, callbackFun) {
-        https.get(url, function (res) {
-            console.log("Your status-code is ".concat(res.statusCode));
-            console.log("Your headers are ".concat(JSON.stringify(res.headers)));
-            res.on('error', function (error) {
+    }
+    getReq(url, callbackFun) {
+        https.get(url, (res) => {
+            console.log(`Your status-code is ${res.statusCode}`);
+            console.log(`Your headers are ${JSON.stringify(res.headers)}`);
+            res
+                .on("error", (error) => {
                 console.error(error);
             })
-                .on('data', function (d) {
+                .on("data", (d) => {
                 process.stdout.write(d);
                 callbackFun != undefined || null ? callbackFun(d) : null;
             });
         });
-    };
-    Node.prototype.postPutOrDeleteReq = function (options, data) {
-        var postBody = JSON.stringify(data);
-        var req = https.request(options, function (res) {
-            console.log("Your status-code is ".concat(res.statusCode));
-            console.log("Your headers are ".concat(JSON.stringify(res.headers)));
-            res.on('data', function (d) {
+    }
+    postPutOrDeleteReq(options, data) {
+        let postBody = JSON.stringify(data);
+        const req = https.request(options, (res) => {
+            console.log(`Your status-code is ${res.statusCode}`);
+            console.log(`Your headers are ${JSON.stringify(res.headers)}`);
+            res.on("data", (d) => {
                 process.stdout.write(d);
             });
-            res.on('end', function () {
+            res.on("end", () => {
                 console.log(postBody);
             });
-            req.on('error', function (e) {
+            req.on("error", (e) => {
                 console.error(e);
             });
         });
         postBody ? req.write(postBody) : null;
         req.end();
-    };
-    return Node;
-}());
+    }
+    runCommand(command, options) {
+        const ls = (0, child_process_1.exec)(command, options, (error, stdout, stderr) => {
+            error
+                ? console.log(`This command ran into an error: ${error.message}`)
+                : stderr
+                    ? console.log(`The stderr was: ${stderr}`)
+                    : console.log(`Stdout: ${stdout}`);
+        });
+    }
+    hashIt(password) {
+        const hash = crypto.createHash("sha256");
+        hash.on("readable", () => {
+            const data = hash.read();
+            if (data) {
+                console.log(data.toString("hex"));
+            }
+        });
+        hash.write(password);
+        hash.end();
+    }
+    createPubandPrivKey(passPhrase, pubKeyStore, privKeyStore) {
+        crypto.generateKeyPair("rsa", {
+            modulusLength: 4096,
+            publicKeyEncoding: {
+                type: "spki",
+                format: "pem",
+            },
+            privateKeyEncoding: {
+                type: "pkcs8",
+                format: "pem",
+                cipher: "aes-256-cbc",
+                passphrase: passPhrase,
+            },
+        }, (err, publicKey, privateKey) => {
+            err
+                ? console.log("Failed to create a key pair")
+                : console.log(`I am the public key ${publicKey},I am the private key${privateKey}`);
+            this.write(pubKeyStore, publicKey);
+            this.write(privKeyStore, privateKey);
+        });
+    }
+    signAndVerify3(passphrase, data, privateKey, pubKey) {
+        const sign = crypto.createSign("SHA256");
+        const signature = sign.sign({
+            key: privateKey,
+            format: "pem",
+            type: "pkcs8",
+            passphrase: passphrase,
+        });
+        const bufferedData = Buffer.from(data);
+        sign.write(data);
+        sign.end();
+        const verify = crypto.createVerify("SHA256");
+        verify.write(data);
+        const isverified = crypto.verify("SHA256", bufferedData, pubKey, signature);
+        console.log(isverified);
+        verify.end();
+    }
+    signAndVerify(privateKey, publicKey, dataToWrite) {
+        // Using Hashing Algorithm
+        const algorithm = "SHA256";
+        // Converting string to buffer
+        const data = Buffer.from(dataToWrite);
+        // Sign the data and returned signature in buffer
+        const signature = crypto.sign(algorithm, data, privateKey);
+        // Verifying signature using crypto.verify() function
+        const isVerified = crypto.verify(algorithm, data, publicKey, signature);
+        // Printing the result
+        console.log(`Verified: ${isVerified}`);
+    }
+}
 exports.useNode = new Node();
 //# sourceMappingURL=master.js.map

@@ -1,10 +1,10 @@
 import * as fs from "node:fs";
-import {isArgumentsObject} from "util/types";
 import * as https from "https";
-
-
+import { exec } from "child_process";
+import * as process from "process";
+import * as crypto from "crypto";
+import { isReturnStatement } from "typescript";
 // file system class
-
 
 class Node {
 	write(filePath: string, data: any) {
@@ -26,8 +26,8 @@ class Node {
 			err
 				? console.log(err)
 				: console.log(
-					`This file either doesnt exist or you're not allowed to view it, at ${filePath}`
-				)
+						`This file either doesnt exist or you're not allowed to view it, at ${filePath}`
+				  )
 		);
 	}
 
@@ -35,8 +35,8 @@ class Node {
 		return fs.rm(filePath, (err) =>
 			err
 				? console.log(
-					`This file either doesnt exist or you're pointing in the wrong place`
-				)
+						`This file either doesnt exist or you're pointing in the wrong place`
+				  )
 				: console.log("File successfully removed")
 		);
 	}
@@ -58,13 +58,11 @@ class Node {
 	}
 
 	readFile(filePath: string): any {
-		return fs.readFile(filePath, (err, data) =>
-			err ? console.log(err) : data
-		);
+		return fs.readFileSync(filePath, { encoding: "utf8" });
 	}
 
 	makeDir(directoryShape: string, multipleDirs: boolean) {
-		return fs.mkdir(directoryShape, {recursive: multipleDirs}, (err) =>
+		return fs.mkdir(directoryShape, { recursive: multipleDirs }, (err) =>
 			err
 				? console.log(err)
 				: `Directory with the shape of ${directoryShape} successfully created.`
@@ -72,7 +70,7 @@ class Node {
 	}
 
 	deleteDir(dirPath: string, multipleDirs: boolean) {
-		return fs.rmdir(dirPath, {recursive: multipleDirs}, (err) =>
+		return fs.rmdir(dirPath, { recursive: multipleDirs }, (err) =>
 			err ? console.log(err) : `${dirPath} removed.`
 		);
 	}
@@ -122,18 +120,18 @@ class Node {
 			err
 				? console.log(`Failed to grab directory at ${dirPath}`)
 				: files.forEach((item) => {
-					let tempNode = new Node();
-					let truePath = `${dirPath}/${item}`;
-					action == "move"
-						? tempNode.renameDir(truePath, newPath)
-						: action == "delete"
+						let tempNode = new Node();
+						let truePath = `${dirPath}/${item}`;
+						action == "move"
+							? tempNode.renameDir(truePath, newPath)
+							: action == "delete"
 							? tempNode.deleteFile(truePath)
 							: action == "append"
-								? tempNode.append(truePath, data)
-								: action == "read"
-									? tempNode.readFile(truePath)
-									: null;
-				})
+							? tempNode.append(truePath, data)
+							: action == "read"
+							? tempNode.readFile(truePath)
+							: null;
+				  })
 		);
 	}
 
@@ -147,7 +145,7 @@ class Node {
 		console.log("I am watching you");
 		return fs.watch(
 			filePath,
-			{persistent: keepWatching, recursive: pathType == "dir"},
+			{ persistent: keepWatching, recursive: pathType == "dir" },
 			(watchFor, filePath) => {
 				callBackFun();
 				console.log(`Your file or directory at ${filePath} has been changed.`);
@@ -157,38 +155,127 @@ class Node {
 
 	getReq(url: string, callbackFun?: Function) {
 		https.get(url, (res) => {
-			console.log(`Your status-code is ${res.statusCode}`)
-			console.log(`Your headers are ${JSON.stringify(res.headers)}`)
-			res.on('error', error => {
-				console.error(error)
-			})
-				.on('data', (d) => {
-					process.stdout.write(d)
-					callbackFun != undefined || null ? callbackFun(d) : null
+			console.log(`Your status-code is ${res.statusCode}`);
+			console.log(`Your headers are ${JSON.stringify(res.headers)}`);
+			res
+				.on("error", (error) => {
+					console.error(error);
 				})
-		})
-
+				.on("data", (d) => {
+					process.stdout.write(d);
+					callbackFun != undefined || null ? callbackFun(d) : null;
+				});
+		});
 	}
 
-	postPutOrDeleteReq(options, data?: Object) {
-		let postBody = JSON.stringify(data)
+	postPutOrDeleteReq(options: Object, data?: Object) {
+		let postBody = JSON.stringify(data);
 		const req = https.request(options, (res) => {
-			console.log(`Your status-code is ${res.statusCode}`)
-			console.log(`Your headers are ${JSON.stringify(res.headers)}`)
-			res.on('data', (d) => {
-				process.stdout.write(d)
-			})
-			res.on('end', () => {
-				console.log(postBody)
-			})
-			req.on('error', (e) => {
-				console.error(e)
-			})
-		})
-		postBody ? req.write(postBody) : null
-		req.end()
+			console.log(`Your status-code is ${res.statusCode}`);
+			console.log(`Your headers are ${JSON.stringify(res.headers)}`);
+			res.on("data", (d) => {
+				process.stdout.write(d);
+			});
+			res.on("end", () => {
+				console.log(postBody);
+			});
+			req.on("error", (e) => {
+				console.error(e);
+			});
+		});
+		postBody ? req.write(postBody) : null;
+		req.end();
 	}
+	runCommand(command: string, options?: Object) {
+		const ls = exec(command, options, (error, stdout, stderr) => {
+			error
+				? console.log(`This command ran into an error: ${error.message}`)
+				: stderr
+				? console.log(`The stderr was: ${stderr}`)
+				: console.log(`Stdout: ${stdout}`);
+		});
+	}
+	hashIt(password: string) {
+		const hash = crypto.createHash("sha256");
+		hash.on("readable", () => {
+			const data = hash.read();
+			if (data) {
+				console.log(data.toString("hex"));
+			}
+		});
 
+		hash.write(password);
+		hash.end();
+	}
+	createPubandPrivKey(
+		passPhrase: string,
+		pubKeyStore: string,
+		privKeyStore: string
+	) {
+		crypto.generateKeyPair(
+			"rsa",
+			{
+				modulusLength: 4096,
+				publicKeyEncoding: {
+					type: "spki",
+					format: "pem",
+				},
+				privateKeyEncoding: {
+					type: "pkcs8",
+					format: "pem",
+					cipher: "aes-256-cbc",
+					passphrase: passPhrase,
+				},
+			},
+			(err, publicKey, privateKey) => {
+				err
+					? console.log("Failed to create a key pair")
+					: console.log(
+							`I am the public key ${publicKey},I am the private key${privateKey}`
+					  );
+				this.write(pubKeyStore, publicKey);
+				this.write(privKeyStore, privateKey);
+			}
+		);
+	}
+	// signAndVerify3(
+	// 	passphrase: string,
+	// 	data: string,
+	// 	privateKey: any,
+	// 	pubKey: any
+	// ) {
+	// 	const sign = crypto.createSign("SHA256");
+	// 	const signature = sign.sign({
+	// 		key: privateKey,
+	// 		format: "pem",
+	// 		type: "pkcs8",
+	// 		passphrase: passphrase,
+	// 	});
+	// 	const bufferedData = Buffer.from(data);
+	// 	sign.write(data);
+	// 	sign.end();
+	// 	const verify = crypto.createVerify("SHA256");
+	// 	verify.write(data);
+	// 	const isverified = crypto.verify("SHA256", bufferedData, pubKey, signature);
+	// 	console.log(isverified);
+	// 	verify.end();
+	// }
+	// signAndVerify(privateKey: any, publicKey: any, dataToWrite: string) {
+	// 	// Using Hashing Algorithm
+	// 	const algorithm = "SHA256";
+
+	// 	// Converting string to buffer
+	// 	const data = Buffer.from(dataToWrite);
+
+	// 	// Sign the data and returned signature in buffer
+	// 	const signature = crypto.sign(algorithm, data, privateKey);
+
+	// 	// Verifying signature using crypto.verify() function
+	// 	const isVerified = crypto.verify(algorithm, data, publicKey, signature);
+
+	// 	// Printing the result
+	// 	console.log(`Verified: ${isVerified}`);
+	// }
 }
 
-export const useNode = new Node()
+export const useNode = new Node();

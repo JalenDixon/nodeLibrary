@@ -1,3 +1,7 @@
 /node_modules
 .idea
 nodelibrary.iml
+jalenpubkey
+jalenprivkey
+testShell.sh
+.vscode
