@@ -1,10 +1,11 @@
 import * as fs from "node:fs";
 import * as https from "https";
-import { exec } from "child_process";
+import {exec} from "child_process";
 import * as process from "process";
 import * as crypto from "crypto";
-import { createFalse, isReturnStatement } from "typescript";
-import { truncate } from "node:fs";
+import {createFalse, isReturnStatement} from "typescript";
+import {truncate} from "node:fs";
+
 // file system class
 
 class Node {
@@ -27,8 +28,8 @@ class Node {
 			err
 				? console.log(err)
 				: console.log(
-						`This file either doesnt exist or you're not allowed to view it, at ${filePath}`
-				  )
+					`This file either doesnt exist or you're not allowed to view it, at ${filePath}`
+				)
 		);
 	}
 
@@ -36,8 +37,8 @@ class Node {
 		return fs.rm(filePath, (err) =>
 			err
 				? console.log(
-						`This file either doesnt exist or you're pointing in the wrong place`
-				  )
+					`This file either doesnt exist or you're pointing in the wrong place`
+				)
 				: console.log("File successfully removed")
 		);
 	}
@@ -59,11 +60,11 @@ class Node {
 	}
 
 	readFile(filePath: string): any {
-		return fs.readFileSync(filePath, { encoding: "utf8" });
+		return fs.readFileSync(filePath, {encoding: "utf8"});
 	}
 
 	makeDir(directoryShape: string, multipleDirs: boolean) {
-		return fs.mkdir(directoryShape, { recursive: multipleDirs }, (err) =>
+		return fs.mkdir(directoryShape, {recursive: multipleDirs}, (err) =>
 			err
 				? console.log(err)
 				: `Directory with the shape of ${directoryShape} successfully created.`
@@ -71,7 +72,7 @@ class Node {
 	}
 
 	deleteDir(dirPath: string, multipleDirs: boolean) {
-		return fs.rmdir(dirPath, { recursive: multipleDirs }, (err) =>
+		return fs.rmdir(dirPath, {recursive: multipleDirs}, (err) =>
 			err ? console.log(err) : `${dirPath} removed.`
 		);
 	}
@@ -121,18 +122,18 @@ class Node {
 			err
 				? console.log(`Failed to grab directory at ${dirPath}`)
 				: files.forEach((item) => {
-						let tempNode = new Node();
-						let truePath = `${dirPath}/${item}`;
-						action == "move"
-							? tempNode.renameDir(truePath, newPath)
-							: action == "delete"
+					let tempNode = new Node();
+					let truePath = `${dirPath}/${item}`;
+					action == "move"
+						? tempNode.renameDir(truePath, newPath)
+						: action == "delete"
 							? tempNode.deleteFile(truePath)
 							: action == "append"
-							? tempNode.append(truePath, data)
-							: action == "read"
-							? tempNode.readFile(truePath)
-							: null;
-				  })
+								? tempNode.append(truePath, data)
+								: action == "read"
+									? tempNode.readFile(truePath)
+									: null;
+				})
 		);
 	}
 
@@ -146,7 +147,7 @@ class Node {
 		console.log("I am watching you");
 		return fs.watch(
 			filePath,
-			{ persistent: keepWatching, recursive: pathType == "dir" },
+			{persistent: keepWatching, recursive: pathType == "dir"},
 			(watchFor, filePath) => {
 				callBackFun();
 				console.log(`Your file or directory at ${filePath} has been changed.`);
@@ -187,15 +188,17 @@ class Node {
 		postBody ? req.write(postBody) : null;
 		req.end();
 	}
-	runCommand(command: string, options?: Object) {
+
+	runCommand(command: string, options?: Object, callbackFun?: Function) {
 		const ls = exec(command, options, (error, stdout, stderr) => {
 			error
 				? console.log(`This command ran into an error: ${error.message}`)
 				: stderr
-				? console.log(`The stderr was: ${stderr}`)
-				: console.log(`Stdout: ${stdout}`);
+					? console.log(`The stderr was: ${stderr}`)
+					: callbackFun();
 		});
 	}
+
 	hashIt(password: string) {
 		const hash = crypto.createHash("sha256");
 		let tempData: string;
@@ -211,17 +214,15 @@ class Node {
 		hash.end();
 		return tempData;
 	}
+
 	verifyHash(password, hash) {
 		let tempHash = this.hashIt(password);
 		let verified: boolean;
-		if (tempHash == this.hashIt(password)) {
-			verified = true;
-		} else {
-			verified = false;
-		}
+		verified = tempHash == this.hashIt(password);
 		verified ? console.log(`Hash verified!`) : console.log("Failure to verify");
 		return verified;
 	}
+
 	createPubandPrivKey(
 		passPhrase: string,
 		pubKeyStore: string,
@@ -246,8 +247,8 @@ class Node {
 				err
 					? console.log("Failed to create a key pair")
 					: console.log(
-							`I am the public key ${publicKey},I am the private key${privateKey}`
-					  );
+						`I am the public key ${publicKey},I am the private key${privateKey}`
+					);
 				this.write(pubKeyStore, publicKey);
 				this.write(privKeyStore, privateKey);
 			}

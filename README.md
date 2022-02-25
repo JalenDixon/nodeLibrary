@@ -3,16 +3,26 @@
 
 # Node Library
 
-### This library is designed to be used with little to no knowledge of node.js. Simply import the constant useNode and access the methods using dot notation.<br><br> Example:  ```useNode.method(parameters go here)```<br><br> Just like that, you're on your way to manipulating the file system without digging through complex documentation
+This library is designed to be used with little to no knowledge of node.js. Simply import the constant useNode and
+access the methods using dot notation.<br>
+
+Example:
+```useNode.method(parameters go here)```
+<br><br> Just like that, you're on your way to manipulating the file system without digging through complex
+documentation
 
 #### However, if documentation is your life's blood. The methods used can be referenced in their more technical state here -> <https://nodejs.org/api/>
 
 ## Node Object
 
-Import the useNode const using the 'import' method. 
- `import {useNode} from "./master";`
+Import the useNode const using the 'import' method.<br>
 
-#### The file methods are asynchronous and non-blocking. The directory methods are synchronous and blocking. This was an intentional design choice, to prevent unexpected behavior with directories.
+```
+import {useNode} from "./master"
+```
+
+<b>Most of the file methods (except readFile) are asynchronous and non-blocking. The directory methods are synchronous
+and blocking. This was an intentional design choice, to prevent unexpected behavior with directories.</b>
 
 ## Here are a list of methods this constant has access to:
 
@@ -34,6 +44,10 @@ Import the useNode const using the 'import' method.
 - GrabUrlParamsKeysAndValues
 - GetReq
 - PostPutOrDeleteReq
+- HashIt
+- VerifyHash
+- CreatePubAndPrivKey
+- RunCommand
 
 # Examples
 
@@ -41,43 +55,58 @@ Import the useNode const using the 'import' method.
 
 #### This method takes in the filepath and the data (of any type) that you wish to write. If there is no file at that path, one will be created.
 
-`useNode.write("/folder/example.txt","Hello world")`
+```
+useNode.write("/folder/example.txt","Hello world")
+```
 
 ### Read
 
-#### This method takes in the filepath and the data (of any type) that you wish to read. If there is no file at that path, the method will produce an error, which will be console.logged.
+#### This method takes in the filepath and the data (of any type) that you wish to read. If there is no file at that path, the method will produce an error, which will be console.logged. This method is blocking, which means once this method runs, it *
+will* finish before the rest of the code is executed.
 
-`useNode.readFile("/folder/example.txt")`
+```
+useNode.readFile("/folder/example.txt")
+```
 
 ### Append
 
 #### This method takes in the filepath and the data (of any type) that you wish to append to the end of the targeted file. If there is no file at that path, one will be created.
 
-`useNode.append("/folder/example.txt","Hello world the sequel")`
+```
+useNode.append("/folder/example.txt","Hello world the sequel")
+```
 
 ### CheckFile
 
 #### This method takes in the filepath. If the file does not exist or you do not have permission to access the file, an error will be logged.
 
-`useNode.checkFile("/folder/example.txt")`
+```
+useNode.checkFile("/folder/example.txt")
+```
 
 ### DeleteFile
 
 #### This method takes in the filepath. If there is no file at that location an error will be logged.
 
-`useNode.deleteFile("/folder/example.txt")`
+```
+useNode.deleteFile("/folder/example.txt")
+```
 
 ### MoveFile
 
 #### This method takes in the 'old' or 'current' file path and a new filepath and moves it by 'renaming'.
 
-`useNode.moveFile("/folder/example.txt","/otherFolder/example.txt)`
+```
+useNode.moveFile("/folder/example.txt","/otherFolder/example.txt)
+```
 
 ### CopyFile
 
 #### This method takes in the source file path and the destination file path and copies it into the new location.
 
-`useNode.copyFile("/sourceFolder/example.txt","/destinationFolder/example.txt")`
+```
+useNode.copyFile("/sourceFolder/example.txt","/destinationFolder/example.txt")
+```
 
 ## Directory Methods
 
@@ -85,15 +114,20 @@ Import the useNode const using the 'import' method.
 
 #### This method takes in the 'shape' of a directory via string (Example: "/parent") and a boolean parameter 'multipleDirs'. If multipleDirs is true, then the method will recursively create directories to satisfy your string input. If multipleDirs is false, it will not.
 
-You want to first target the directory that the future children directories will branch off of. If not, the method will throw an error.
+You want to first target the directory that the future children directories will branch off of. If not, the method will
+throw an error.
 
-`useNode.makeDir("/parent/child1/child2/child3", true or false)`
+```
+useNode.makeDir("/parent/child1/child2/child3", true or false)
+```
 
 ### DeleteDir
 
 #### This method takes a directory path, and the same multipleDirs boolean from Makedir. If makedirs is false, the only directory deleted will be the current one. If multipleDirs is true, the method will recursively delete every child directory.
 
-`useNode.deleteDir("/parent/child1/child2/child3", true or false)`
+```
+useNode.deleteDir("/parent/child1/child2/child3", true or false)
+```
 
 ### MoveDir
 
@@ -101,7 +135,9 @@ You want to first target the directory that the future children directories will
 
 Directories: /parent1/sadChild ---- /parent2/
 
-`useNode.moveDir("/parent1/sadChild", "/parent2/sadChild")`
+```
+useNode.moveDir("/parent1/sadChild", "/parent2/sadChild")
+```
 
 Result --> /parent1 ----- /parent2/sadChild
 
@@ -111,7 +147,9 @@ Result --> /parent1 ----- /parent2/sadChild
 
 Directories: /parent1/sadChild
 
-`useNode.renameDir("/parent1/sadChild", "/parent1/confusedChild")`
+```
+useNode.renameDir("/parent1/sadChild", "/parent1/confusedChild")
+```
 
 Result --> /parent1/confusedChild
 
@@ -120,6 +158,7 @@ Result --> /parent1/confusedChild
 #### This method loops over a directory and fires a function for each file inside the directory depending on the description of the action. It takes in a directory path, the desired action, an optional new path, and an optional data parameter of any type.
 
 ```useNode.loopOverDir(parameters below)```
+
 ```
 loopOverDir(
    dirPath: string,
@@ -129,13 +168,16 @@ loopOverDir(
  )
 ```
 
-The action parameter specifies what of the four possible methods will be run on each file. If you are appending a file, then data must be filled in or the method will throw an error. If you are moving the files in the directory, then a new path value must be passed in.
+The action parameter specifies what of the four possible methods will be run on each file. If you are appending a file,
+then data must be filled in or the method will throw an error. If you are moving the files in the directory, then a new
+path value must be passed in.
 
 ### WatchFileOrDir
 
 #### This method 'watches' a file or a directory, firing a function if the directory or file changes or is renamed based on the value of the 'watchFor' variable.
 
 ```useNode.watchFileOrDir(parameters below)```
+
 ```
 watchFileOrDir(
    filePath: string,
@@ -149,7 +191,8 @@ watchFileOrDir(
 #### The variable keepWatching is a boolean that defines if the file or directory will be tracked for the duration of your program or not. True, it is a persistent watch. On false, it is not. The watchFor variable defines if the function is fired during a file or directory rename or change in the content. This behavior varies depending on the browser or operating system. Testing for the desired behavior is recommended prior to use.
 
 ## Url Methods
-###For practicing the below url methods, I utilized the website --> <https://reqres.in/>
+
+### For practicing the below url methods, I utilized the website --> <https://reqres.in/>
 
 ### GetSingleUrlParam
 
@@ -169,43 +212,108 @@ getSingleUrlParam(grabbedURL: string, param: string) {
 
 #### This method takes a url as a string and an array of strings for the desired parameters and returns an array of parameter values.
 
-`useNode.getUrlParameters(grabbedURL: string, params: string[]): string[]`
+```
+useNode.getUrlParameters(grabbedURL: string, params: string[]): string[]
+```
 
 ### GrabUrlParamsKeysAndValues
 
 #### This method takes in a url as a string and returns an object of arrays, each containing the key and value pair for all parameters in a URL.
 
-`useNode.grabUrlParamsKeysAndValues(grabbedURL: string)`
+```
+useNode.grabUrlParamsKeysAndValues(grabbedURL: string)
+```
 
 ### Get Request
 
-#### This method executes a get request to a URL and then fires an optional function with the data retrieved.  
+#### This method executes a get request to a URL and then fires an optional function with the data retrieved.
 
-```useNode.getReq("your URL here",callBackFunction)``` 
-or ```useNode.getReq("your URL here")```
+```
+useNode.getReq("your URL here",callBackFunction
+```
+
+<div align="center">or</div>
+
+```
+useNode.getReq("your URL here")
+```
 
 ### PostPutOrDeleteReq
 
 #### This method takes in two parameters: an object that <u>must</u> be created, and an optional data parameter in the shape of an object. The first object contains the properties that node will parse through during its https operations. The second object will be stringified automatically.
 
-The first object is shaped as so: ```
-const options = {
-hostname: 'the base url',
-path: 'the endpoint desired',
-method: 'the method you want to utilize',
-header: {
-'Content-Type': 'the type of data, i.e json'
-}
-}```
+#### The first object is shaped as so:
 
-Example: ```useNode.postPutOrDeleteReq(options,dataToPost)```<br>
-<br>
-Example of the first parameter: ```const options = {
-hostname: 'reqres.in',
-path: '/api/users',
-method: 'POST',
-header: {
-'Content-Type': 'application/json'
-}
-}```
+```
+const options = { hostname: 'the base url', path: 'the endpoint desired', method: 'the method you want to utilize', header: {
+'Content-Type': 'the type of data, i.e json' } }
+```
 
+#### Example of the first parameter:
+
+```
+const options = { hostname: 'reqres.in', path: '/api/users', method: 'POST', header: {
+'Content-Type': 'application/json' } }
+```
+
+Example of the method:
+
+```
+useNode.postPutOrDeleteReq(options,dataToPost)
+```
+
+## Crypto Methods
+
+### Hash It
+
+#### This method takes in a string as your 'password', or other data that you want stored in a cryptologic fashion and hashes it.
+
+#### *Note* Once data is hashed it <u>Cannot be unhashed or returned to its original string</u>.
+
+```
+useNode.hashIt('your string here')
+```
+
+### Verify Hash
+
+#### This method takes the string which in most cases would be the password and the hash that you're comparing it to. If the string, once hashed, matches the hash that is the second parameter the method returns true.
+
+```
+useNode.verifyHash('string','hash youre comparing')
+```
+
+### Create Public And Private Key
+
+#### This method creates a public and private key. It takes in a passphrase, the location you wish to store your public key, and the location you wish to store your private key. <u>The location must have a filename in the path, as the method locates the directory you wish to place it in and then assigns a filename. No default filename is given.</u> <br><br>
+
+#### Example: ```"/src/keyFolder/pubKeyExample"```
+
+```
+useNode.createPubandPrivKey("example password","/src/keyFolder/publicKey","/src/keyFolder/privateKey")
+```
+
+## Shell Methods
+
+### Run Command
+
+#### This method utilizes the default shell of the operating system. It is used to run batch files or command files. It takes in the command as a string, and an optional "options" object. It also takes in an optional callback function that will run at the end of the file executing. Below is an example of some options one might find useful. Deeper documentation can be found on --> <https://nodejs.org/api/child_process.html>
+
+#### Options:
+
+* cwd : current working directory
+* signal: abort signal
+* timeout: time to wait before running file
+* uid: sets the identity of the process
+* windowsHide: Default is false, if true- it hides the windows' console that would typically pop up.
+
+#### Example of options object:
+
+```
+{ cwd:"src", windowsHide:true, uid: 1, timeout:1500, signal:event }
+``` 
+
+#### Example of the method:<br>
+
+```
+runCommand("ls -la", {windowsHide:true},yourFunction)
+```
