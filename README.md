@@ -61,8 +61,7 @@ useNode.write("/folder/example.txt","Hello world")
 
 ### Read
 
-#### This method takes in the filepath and the data (of any type) that you wish to read. If there is no file at that path, the method will produce an error, which will be console.logged. This method is blocking, which means once this method runs, it *
-will* finish before the rest of the code is executed.
+#### This method takes in the filepath and the data (of any type) that you wish to read. If there is no file at that path, the method will produce an error, which will be console.logged. This method is blocking, which means once this method runs, it *will* finish before the rest of the code is executed.
 
 ```
 useNode.readFile("/folder/example.txt")
