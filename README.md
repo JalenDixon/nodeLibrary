@@ -1,7 +1,7 @@
 <div align="center"><img height="200px" width="200px" src="./src/resources/nodejs-png-nodejs-icon-png-50-px-1600.png" alt="node.js">
 </div>
 
-# Node Library
+# Node & Microsoft Library
 
 This library is designed to be used with little to no knowledge of node.js. Simply import the constant useNode and
 access the methods using dot notation.<br>
@@ -61,7 +61,9 @@ useNode.write("/folder/example.txt","Hello world")
 
 ### Read
 
-#### This method takes in the filepath and the data (of any type) that you wish to read. If there is no file at that path, the method will produce an error, which will be console.logged. This method is blocking, which means once this method runs, it *will* finish before the rest of the code is executed.
+#### This method takes in the filepath and the data (of any type) that you wish to read. If there is no file at that path, the method will produce an error, which will be console.logged. This method is blocking, which means once this method runs, it *
+
+will* finish before the rest of the code is executed.
 
 ```
 useNode.readFile("/folder/example.txt")
@@ -287,7 +289,7 @@ useNode.verifyHash('string','hash youre comparing')
 
 #### Example: ```"/src/keyFolder/pubKeyExample"```
 
-```
+```aidl
 useNode.createPubandPrivKey("example password","/src/keyFolder/publicKey","/src/keyFolder/privateKey")
 ```
 
@@ -307,12 +309,129 @@ useNode.createPubandPrivKey("example password","/src/keyFolder/publicKey","/src/
 
 #### Example of options object:
 
-```
+```aidl
 { cwd:"src", windowsHide:true, uid: 1, timeout:1500, signal:event }
 ``` 
 
 #### Example of the method:<br>
 
-```
+```aidl
 runCommand("ls -la", {windowsHide:true},yourFunction)
+```
+
+## Microsoft Methods
+
+### Quick note on parameter names and what they mean: <br><br>
+
+For the parameters, whenever <u>Path</u> is mentioned, it is mentioned as a string with the ending slash. <br><br>
+For example: <br><br>  This is correct -->   ```'../src/resources/'``` <br><br> This is not
+--> ```'../src/resources'``` <br> <br> Whenever <u>name</u> is mentioned:<br><br> This is
+correct-->```'myexcel' or 'myjson'``` <br><br> This is not --> ```'myexcel.xlsx or 'myjson.json'```
+<br>
+
+#### The reason for this, is because in the function I add the filename extensions myself. I did not add the slashes to make it more clear that you are specifying the path of the <u>Directory</u> and not the absolute path of the item. <br><br>
+
+#### Utilize the same import method as you did for useNode.
+
+```aidl
+import useMicrosoft from './src/microsoft.ts'
+```
+
+#### Below are a list of usable methods, utilizing code from the sheet.js repo. --> <https://github.com/SheetJS/sheetjs> For more detailed documentation please see that repository.
+
+- readSheets
+- readSingleSheet
+- makeEmptyExcel
+- createExcelFromJson
+- appendIntoExcel
+- editCell
+- getCell
+- getColumn
+- getRow
+
+### Read Sheets
+
+#### This method returns an array of objects of Excel sheets. It takes in the path, the name of the Excel document, and a boolean. If true, this boolean console.logs the resulting array of objects.
+
+```aidl
+readSheets(path: string, excelName: string, showResult: boolean): {}[]
+```
+
+### Read Single Sheet
+
+#### This method returns an array of objects for a specified sheet.It takes in the path, the name of the Excel document, and a boolean. If true, this boolean console.logs the result.
+
+```aidl
+readSingleSheet(
+		path: string,
+		excelName: string,
+		sheetName?: string,
+		showResult?: boolean
+	) 
+```
+
+### Make Empty Excel
+
+#### This method takes in the path you wish to save your Excel to and the name of the Excel.
+
+```aidl
+makeEmptyExcel(path: string, excelName: string)
+```
+
+### Create Excel From Json
+
+#### This method takes in the path of the json you wish to read, the name of the json, the path you wish to same your json to, the name of the Excel, and the parentObject of the json.
+
+##### The shape of the JSON <u>must</u> be like so:
+
+```aidl
+{
+    'parentObject':
+        {
+            Attribute1:'Attribute string',
+            Attribute2:'Attribute2 string'
+        },
+        
+        ...
+}
+```
+
+<br>
+
+```aidl
+   createExcelFromJson(jsonPath: string, jsonName: string, excelPath: string, excelName: string, parentAttribute: string)
+```
+
+### Append into Excel
+
+#### This method appends a row to the bottom of an Excel. It takes in the path of the Excel, the name of the Excel, the data you wish to add in either parsed object or string, and an optional sheetname parameter. If nothing is specified for sheet name, the default will be the Excel name.
+
+```aidl
+appendIntoExcel(excelPath: string, excelName: string, data: Object | string, sheetName?: string)
+```
+
+### Edit cell
+
+#### This method edits a specific cell based on the 'action' you provide it. It takes in the path of the Excel, the name of the Excel, the cell address, the value as a string that you wish to replace it with, the action you want to execute, and an optional sheetName. If no value is provided for sheet name it will default to the Excel name. The method logs what the cell was prior to the edit and what it is after the edit.
+
+```aidl
+editCell(excelPath: string, excelName: string, cellAddress: string, replacement: string | number, action: 'append' | 'delete' | 'replace', sheetName?: string)
+```
+
+### Get Cell
+
+#### This method returns the cell you designate based off of a search value. It is highly recommended that you search using a unique value. It takes in the excelPath, the name of the Excel, the search value as a string, number, or boolean, and an optional sheetname. If no sheetname is provided the method will default to the Excel name.
+
+```aidl
+getCell(excelPath: string, excelName: string, searchValue: string | number | boolean, sheetName?: string)
+```
+
+### Get Column & Get Row
+
+#### These methods return an array of objects containing every value in the designated column or row. They take in the path of the Excel, the name of the Excel, the desired columb as a string, and an optional sheetname parameter. If no sheetname is provided the method will default to the Excel name.
+
+```aidl
+getColumn(excelPath: string, excelName: string, searchColumn: string, sheetName?: string)
+
+getRow(excelPath: string, excelName: string, cellValue: string | number | boolean, sheetName?: string)
 ```

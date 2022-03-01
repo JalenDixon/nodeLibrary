@@ -30,8 +30,8 @@ class Microsoft {
 		const file = XL.readFile(fullPath, {cellDates: true});
 		const sheet = file.SheetNames;
 		const targetSheet = sheetName ? sheetName : sheet[0]
-		const sheetData = XL.utils.sheet_to_json(file.Sheets[targetSheet]);
-		console.log(sheet, sheetData)
+		return XL.utils.sheet_to_json(file.Sheets[targetSheet]);
+
 	}
 
 	makeEmptyExcel(path: string, excelName: string) {
@@ -120,7 +120,7 @@ class Microsoft {
 			main.child.name.v == searchColumn ? letterToUseForSearch = main.letter : null
 			main.letter == letterToUseForSearch ? returnedCellObjArray.push(sheetValues[i]) : i
 		}
-		console.log(returnedCellObjArray.slice(1))
+		return returnedCellObjArray.slice(1)
 
 	}
 
@@ -137,7 +137,7 @@ class Microsoft {
 			main.child.name = sheetValues[i]
 			main.child.name.v == cellValue ? numberToUseForSearch = main.number : null
 			console.log(numberToUseForSearch)
-			// main.number == numberToUseForSearch ? returnedCellObjArray.push(sheetValues[i]) : i
+
 		}
 		for (let i = 0; i < sheetKeys.length; i++) {
 			main.letter = sheetKeys[i].split('')[0]
@@ -146,7 +146,7 @@ class Microsoft {
 			main.number == numberToUseForSearch ? returnedCellObjArray.push(sheetValues[i]) : null
 		}
 
-		console.log(returnedCellObjArray)
+		return returnedCellObjArray
 	}
 
 }
